@@ -1,42 +1,54 @@
 import numpy as np
 from scipy import linalg
 
-def find_smallest_integer_p():                  # Why is it a requisite to find the smallest integers? 
-    print("achei")
+
+def find_first_non_null_pivot(n):
+
+    
     return 23
 
-def gauss(A):                                   # A is the augmented matrix
-    p = 0
-    
-    for i in range(0, n-2):                     # Changed because of zero index
-        p = find_smallest_integer_p()
-        if (p == "non-integer number or zero"): # is it possible to p be zero?
+
+def gauss(A, b):                                               # A is the augmented matrix
+    n = len(A)
+    pivot_row_index = 0
+
+    for i in range(0, n-2):                                    # Changed because of zero index
+        pivot_row_index = find_first_non_null_pivot(n)
+        if (pivot_row_index == "non-integer number or zero"):  # is it possible to p be zero?
             print("no unique solution exists")
-            return "something appropriate to this case"
-        if (p != i):
+            return np.empty
+        if (pivot_row_index != i):
             print("numpy swap rows: A[i]-swap-A[p]")
-        for j in range(i, n-1):                 # Changed because of zero index
-            m[j][i] = a[j][i]/a[i][i]
-            row[j] = row[j] - m*row[i]
-    
-    for k in range (0, n-1):
-        if A[k][k] == 0:                        # A zero in the main diagonal     
+            A[i], A[pivot_row_index] = A[pivot_row_index], A[i]
+        for j in range(i+1, n-1):                
+            m = A[j][i]/A[i][i]
+            # np.subtract(A row j ...)
+            A[j] = A[j] - m*A[i]                                # Eliminating the first j-th elements; 
+                                                                # A[j] means all columns of the j-th row of A
+
+    for k in range(0, n-1):                                     # Verifying if there is any zero in the main diagonal
+        if A[k][k] == 0:                        
             print("no unique solution exists")
-            return "something appropriate to this case"
-    
-    x[n] = np.array
-    for k in range (0, n-1):                    # Backward substitution
-        x[k] = a[n-1][n]/a[n-1][n-1]
-    
+            return np.empty(shape=(n, n))
+
+
+    # STARTING BACKWARD SUBSTITUTION
+
+    x = np.ones(shape=n)
+    for k in range(0, n-1):                     # Backward substitution
+        x[k] = A[n-1][n]/A[n-1][n-1]
+
     for i in range(n-2, 0):
         sum_axj = 0
         for j in range(i, n-1):
-            sum_axj = (sum_axj + a[i][j]*x[j]) 
-        x[i] = (a[i][n] - sum_axj) / a[i][i]
+            sum_axj = (sum_axj + A[i][j]*x[j])
+        x[i] = (A[i][n] - sum_axj) / A[i][i]
     print("results are ready")
-    return "x array with the results"
-        
+    return x
+
 
 # Develop some main function
 
-approximation = gauss(linalg.hilbert(3))
+
+hilbert_solution = "that sum over the rows"
+approximation = gauss(linalg.hilbert(3), hilbert_solution)
