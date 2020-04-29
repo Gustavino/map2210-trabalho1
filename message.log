@@ -1,0 +1,40 @@
+A precisão utilizada é 1e-10
+--------------------------------------------------------------------------
+INICIANDO ITERAÇÃO PARA UMA MATRIZ DE HILBERT DE ORDEM 2
+O determinante vale 0.0833333333
+O vetor resultante é [1. 1.].
+O primeiro "1." mostrado pelo Python, na verdade, é 1.000000000000000444
+O vetor diferença é [0. 0.]
+--------------------------------------------------------------------------
+INICIANDO ITERAÇÃO PARA UMA MATRIZ DE HILBERT DE ORDEM 4
+O determinante vale 0.0000001653
+O vetor resultante é [1. 1. 1. 1.].
+O primeiro "1." mostrado pelo Python, na verdade, é 0.999999999999977351
+O vetor diferença é [0. 0. 0. 0.]
+--------------------------------------------------------------------------
+INICIANDO ITERAÇÃO PARA UMA MATRIZ DE HILBERT DE ORDEM 6
+O determinante vale 0.0000000000
+O vetor resultante é [1. 1. 1. 1. 1. 1.].
+O primeiro "1." mostrado pelo Python, na verdade, é 0.999999999999227840
+O vetor diferença é [ 0.00000000e+00  0.00000000e+00  1.48208001e-10 -3.85369514e-10
+  4.25416036e-10 -1.67680092e-10]
+--------------------------------------------------------------------------
+INICIANDO ITERAÇÃO PARA UMA MATRIZ DE HILBERT DE ORDEM 8
+O determinante vale 0.0000000000
+O vetor resultante é [1.         1.         0.99999998 1.00000008 0.99999978 1.00000031
+ 0.99999978 1.00000006].
+O primeiro "1." mostrado pelo Python, na verdade, é 0.999999999977596477
+O vetor diferença é [ 0.00000000e+00 -1.17921117e-09  1.52438943e-08 -8.19868293e-08
+  2.19829454e-07 -3.10170087e-07  2.20281768e-07 -6.20567091e-08]
+--------------------------------------------------------------------------
+INICIANDO ITERAÇÃO PARA UMA MATRIZ DE HILBERT DE ORDEM 10
+no unique solution exists
+O vetor resultante é [].
+--------------------------------------------------------------------------
+INICIANDO ITERAÇÃO PARA UMA MATRIZ DE HILBERT DE ORDEM 12
+no unique solution exists
+O vetor resultante é [].
+--------------------------------------------------------------------------
+INICIANDO ITERAÇÃO PARA UMA MATRIZ DE HILBERT DE ORDEM 14
+no unique solution exists
+O vetor resultante é [].
