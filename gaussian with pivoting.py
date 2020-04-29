@@ -2,7 +2,8 @@
 import sys
 import numpy as np
 from scipy import linalg
-import math
+
+np.set_printoptions(precision=16, linewidth=350, suppress=True)
 
 precision = 0.0000000000000001
 
@@ -17,35 +18,51 @@ def find_first_non_null_pivot(A, start):
 
     return pivot_row_index
 
+def max_element_in_row(A, i):
+    n = len(A)
+    max = i
+    for k in range(i, n):
+        if A[max][i] < A[k][i]:
+            max = k
+    return max
 
-def backward_substitution(A):
+
+def backward_substitution(A, determinant_signal):
     n = len(A)
     x = np.ones(shape = n)                                  
                                              
-    for i in range(n-1, -1, -1):                                     # STEP 9. Backward substitution.
-        x[i] = A[i][n] / A[i][i]                                     # STEP 8
+    for i in range(n-1, -1, -1):
+        x[i] = A[i][n] / A[i][i] 
         for j in range(i-1, -1, -1):
             A[j][n] -= A[j][i] * x[i]
 
 
     A = np.delete(A, n, axis=1)
-    #print(A)
-    print("O determinante vale {:.10f}".format(np.linalg.det(A)))
+    print("O determinante vale {:.10f}".format(np.linalg.det(A) * determinant_signal))
     return x
 
 
-def gauss(A):                                                   # A is the augmented matrix
+def gauss(A):                                                   
     n = len(A)
+    determinant_signal = 1
 
-    for i in range(0, n):                                       # STEP 1. i = i-th row.
-        pivot_row_index = find_first_non_null_pivot(A, i)
+    # print("A matriz aumentada inicial A é: ")
+    # print(A.view())
 
-        if abs(A[pivot_row_index][i]) < precision:          # STEP 2. Checking if the pivot element is equals to zero.
+    for i in range(0, n):                                       
+        max_pivot_row_index = max_element_in_row(A, i)
+
+        if abs(A[max_pivot_row_index][i]) < precision:          
             print("no unique solution exists")
             return np.array(object=[])
 
-        if (pivot_row_index != i):                              # STEP 3. Swaping rows if the pivot isn't in the main diagonal.
-            A[[i, pivot_row_index]] = A[[pivot_row_index, i]] #------------------------STEP 4 5 6
+        if (max_pivot_row_index != i):
+            determinant_signal *= -1                              
+            A[[i, max_pivot_row_index]] = A[[max_pivot_row_index, i]] 
+
+        # print("")
+        # print("Após a {}a verificação de possível troca: ".format(i+1))
+        # print(A.view())
 
         for k in range(i + 1, n):
             m = -A[k][i] / A[i][i]
@@ -55,24 +72,21 @@ def gauss(A):                                                   # A is the augme
                 else:
                     A[k][j] += m * A[i][j]
 
-    for k in range(0, n):                                       # STEP 7. Verifying if there is any zero in the main diagonal.
-        if abs(A[k][k]) < precision:                              # Checking if A[k][k] is zero.
-            print("no unique solution exists")
-            return np.array(object=[])
-
     # STARTING BACKWARD SUBSTITUTION
-    return backward_substitution(A)
+    return backward_substitution(A, determinant_signal)
 
 
 if __name__ == "__main__":
 
     old_stdout = sys.stdout
-    log_file = open("teste dotproduct.log", "w")
+    log_file = open("teste massivo pivoting.log", "w")
     sys.stdout = log_file
 
     print ("A precisão utilizada é {}".format(precision))
 
-    for n in range(2,17, 2):
+    for n in range(2, 13, 2):
+    #for n in range(1):
+    #   n = 14
         hilbert_matrix = linalg.hilbert(n) # Generating a nxn Hilbert matrix
         
         vector_b = np.array([hilbert_matrix[i].sum() for i in range (0, len(hilbert_matrix))]) # Generating vector b, the sum of Hilbert matrices rows
@@ -88,20 +102,13 @@ if __name__ == "__main__":
         
 
         if (vector_x.shape != (0,)):
-            #if (abs(vector_x[0]) > precision):
-            print("O primeiro \"1.\" mostrado pelo Python, na verdade, é {:.18f}".format(vector_x[0]))
+            print("O primeiro \"1.\" mostrado pelo Python, na verdade, é {:.18f}".format(vector_x.view()[0]))
 
             
             ones_vector = np.ones(n)
             print("A norma ideal é {}".format(np.dot(ones_vector, ones_vector)))
             print("A norma do vetor resultante é {}".format(np.dot(vector_x, vector_x)))
             print("Diferença entre as normas: {}".format(np.dot(vector_x, vector_x) - np.dot(ones_vector, ones_vector)))
-
-            #subtraction = np.subtract(ones_vector, vector_x)
-            #for i in range(n):
-            #    if abs(subtraction[i]) < 0.0001:
-            #        subtraction[i] = 0
-            #print("O vetor diferença é {}".format(subtraction))
         
     
     sys.stdout = old_stdout
