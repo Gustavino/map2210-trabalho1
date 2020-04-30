@@ -27,12 +27,10 @@ def backward_substitution(A):
         for j in range(i-1, -1, -1):
             A[j][n] -= A[j][i] * x[i]
 
-
     A = np.delete(A, n, axis=1)
     #print(A)
     print("O determinante vale {:.10f}".format(np.linalg.det(A)))
     return x
-
 
 def gauss(A):                                                   # A is the augmented matrix
     n = len(A)
@@ -67,7 +65,7 @@ def gauss(A):                                                   # A is the augme
 if __name__ == "__main__":
 
     old_stdout = sys.stdout
-    log_file = open("teste dotproduct.log", "w")
+    log_file = open("naive gaussian para pegar a norma 2.log", "w")
     sys.stdout = log_file
 
     print ("A precisão utilizada é {}".format(precision))
@@ -92,10 +90,14 @@ if __name__ == "__main__":
             print("O primeiro \"1.\" mostrado pelo Python, na verdade, é {:.18f}".format(vector_x[0]))
 
             
+            
             ones_vector = np.ones(n)
+            norm_type_2_vector = np.subtract(vector_x, ones_vector)
+            
             print("A norma ideal é {}".format(np.dot(ones_vector, ones_vector)))
             print("A norma do vetor resultante é {}".format(np.dot(vector_x, vector_x)))
-            print("Diferença entre as normas: {}".format(np.dot(vector_x, vector_x) - np.dot(ones_vector, ones_vector)))
+            print("A norma 2 é: {}".format(np.dot(norm_type_2_vector, norm_type_2_vector)))
+            #print("Diferença entre as normas: {}".format(np.dot(vector_x, vector_x) - np.dot(ones_vector, ones_vector)))
 
             #subtraction = np.subtract(ones_vector, vector_x)
             #for i in range(n):

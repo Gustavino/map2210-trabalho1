@@ -5,13 +5,13 @@
 > a. Código, comentado, em Python para resolução de sistemas lineares pelo método da Eliminação de Gauss sem pivotamento.  
   
   * Os comentários iniciados com "STEP" se referem ao algoritmo descrito no livro Numerical Analysis. Da mesma maneira, para manter conformidade com o idioma do livro-texto, diversos nomes de variáveis e funções estão em inglês.  
-  * Em alguns pontos do código, é utilizado, para verificar se um número é zero, a função abs que entrega o módulo de um número (int, float).  
+  * Em alguns pontos do código é utilizada, para verificar se um número é zero, a função _abs_, que entrega o módulo de um número (int, float).  
     * Exemplo: 
     ```python  
     precision = 0.00001
     abs(number) < precision # Nesse caso, são utilizadas cinco casas decimais para verificar se um número está próximo de zero.
     ```  
-  * A precisão definida no início do código é fundamental ao seu correto funcionamento: na demonstração abaixo, **a precisão limita a verificação do algoritmo até n=16**.
+  * A precisão definida no início do código é fundamental ao seu correto funcionamento: na demonstração abaixo, **a precisão limita a verificação do algoritmo até n = 16**.
 ```python  
 import numpy as np
 from scipy import linalg
@@ -29,7 +29,6 @@ def find_first_non_null_pivot(A, start):
 
     return pivot_row_index
 
-
 def backward_substitution(A):
     n = len(A)
     x = np.ones(shape = n)                                  
@@ -41,11 +40,9 @@ def backward_substitution(A):
 
     return x                                                    # STEP 10.
 
-
 def gauss(A):                                                   # A é a matriz aumentada de Ax = B
     # n é a dimensão da matriz quadrada A, nxn, definida fora da função. Ou seja, n é o tamanho da matriz A não aumentada.
     n = len(A)
-
 
     for i in range(0, n):                                       # STEP 1. 
         pivot_row_index = find_first_non_null_pivot(A, i)
@@ -223,7 +220,7 @@ Diferença entre as normas: 228.9988753089912
 ```
   
 
-**Sobre o vetor x solução**:  
+**Sobre o vetor _x_ (solução)**:  
 * Acerca de suas componentes finais: observando-se os vetores resultantes até a terceira iteração, sobre a matriz de ordem 6, fica claro que os problemas decorrentes do má condicionamento da matriz de Hilbert ainda não alteraram drasticamente os resultados. Entretanto, já nota-se uma diferença: a presença do "." após o número um, como em "1.", no vetor resultante indica a presença de arrendondamento em casas decimais muito distantes da vírgula (certamente após a oitava casa decimal, que é o padrão de exibição dos valores de np.darray ou listas do Python).  
 Dessa forma, da matriz de ordem 8 em diante, ficam claras as consequências incovenientes dos arrendondamentos anteriores sobre o vetor solução.
 
@@ -231,7 +228,8 @@ Dessa forma, da matriz de ordem 8 em diante, ficam claras as consequências inco
   
 >b. Código estendendo a solução do item _a_ com o processo de **pivotamento**.  
 
-* O código a seguir contém as mudanças necessárias ao pivotamento: na busca do pivô da i-ésima linha, é feita uma busca linear pelo maior elemento entre os elementos de A[i][j], com **0 <= i <= n-1** e **i <= j <= n-1**. Se o pivô encontrado não estiver na linha i, há uma troca das linhas i e j e o determinante terá o seu sinal alterado no momento do cálculo atráves da multiplicação pela variável _determinant\_signal_. Além disso, as instruções para a realização de logs, como aqueles realizados no item a, foram deixadas no corpo do código, por isso as chamadas para _print()_.
+* O código a seguir contém as mudanças necessárias ao pivotamento: na procura do pivô da i-ésima linha, é feita uma busca linear pelo maior elemento entre os elementos A[i][j], com **0 <= i <= n-1** e **i <= j <= n-1**. Se o pivô encontrado não estiver na linha i, há uma troca das linhas i e a linha com o maior pivô. Assim, o determinante terá o seu sinal alterado no momento de seu cálculo atráves da multiplicação pela variável _determinant\_signal_. 
+* As instruções para a realização de logs, como aqueles realizados no item a, foram deixadas no corpo do código, por isso as chamadas para _print()_.
 
 ```python
 
@@ -252,7 +250,6 @@ def max_element_in_row(A, i):
             max = k
     return max
 
-
 def backward_substitution(A, determinant_signal):
     n = len(A)
     x = np.ones(shape = n)                                  
@@ -262,11 +259,9 @@ def backward_substitution(A, determinant_signal):
         for j in range(i-1, -1, -1):
             A[j][n] -= A[j][i] * x[i]
 
-
     A = np.delete(A, n, axis=1)
     print("O determinante vale {:.10f}".format(np.linalg.det(A) * determinant_signal))
     return x                                                      
-
 
 def gauss(A):                                                   
     n = len(A)
@@ -294,7 +289,6 @@ def gauss(A):
 
     # STARTING BACKWARD SUBSTITUTION
     return backward_substitution(A)
-
 
 if __name__ == "__main__":
 
@@ -453,51 +447,51 @@ A precisão utilizada é 1e-16
 --------------------------------------------------------------------------
 INICIANDO ITERAÇÃO PARA UMA MATRIZ DE HILBERT DE ORDEM 2
 O determinante vale 0.0833333333
-O vetor resultante é [1.0000000000000004 0.9999999999999993]
+O vetor resultante é [1. 1.]
 O primeiro "1." mostrado pelo Python, na verdade, é 1.000000000000000444
 A norma ideal é 2.0
 A norma do vetor resultante é 1.9999999999999996
-Diferença entre as normas: -4.440892098500626e-16
+A norma 2 é: 6.409494854920721e-31
 --------------------------------------------------------------------------
 INICIANDO ITERAÇÃO PARA UMA MATRIZ DE HILBERT DE ORDEM 4
 O determinante vale 0.0000001653
-O vetor resultante é [0.9999999999999768 1.000000000000256  0.9999999999993879 1.0000000000003963]
+O vetor resultante é [1. 1. 1. 1.]
 O primeiro "1." mostrado pelo Python, na verdade, é 0.999999999999976796
 A norma ideal é 4.0
 A norma do vetor resultante é 4.000000000000034
-Diferença entre as normas: 3.375077994860476e-14
+A norma 2 é: 5.978010866034885e-25
 --------------------------------------------------------------------------
 INICIANDO ITERAÇÃO PARA UMA MATRIZ DE HILBERT DE ORDEM 6
 O determinante vale 0.0000000000
-O vetor resultante é [0.9999999999990724 1.0000000000266975 0.9999999998182728 1.0000000004748553 0.9999999994739818 1.0000000002078646]
+O vetor resultante é [1. 1. 1. 1. 1. 1.]
 O primeiro "1." mostrado pelo Python, na verdade, é 0.999999999999072409
 A norma ideal é 6.0
 A norma do vetor resultante é 6.000000000001489
-Diferença entre as normas: 1.4885870314174099e-12
+A norma 2 é: 5.791287888596808e-19
 --------------------------------------------------------------------------
 INICIANDO ITERAÇÃO PARA UMA MATRIZ DE HILBERT DE ORDEM 8
 O determinante vale 0.0000000000
-O vetor resultante é [0.9999999999717035 1.0000000015083135 0.9999999803342513 1.000000106424826  0.999999713308501  1.0000004059917933 0.9999997108174259 1.0000000816638364]
+O vetor resultante é [1.         1.         0.99999998 1.00000011 0.99999971 1.00000041 0.99999971 1.00000008]
 O primeiro "1." mostrado pelo Python, na verdade, é 0.999999999971703524
 A norma ideal é 8.0
 A norma do vetor resultante é 8.000000000041652
-Diferença entre as normas: 4.165201517025707e-11
+A norma 2 é: 3.490321562354146e-13
 --------------------------------------------------------------------------
 INICIANDO ITERAÇÃO PARA UMA MATRIZ DE HILBERT DE ORDEM 10
 O determinante vale 0.0000000000
-O vetor resultante é [0.9999999985728525 1.0000001203304385 0.9999974848388027 1.0000225232616968 0.9998938911782738 1.000288677455108  0.9995305432724556 1.000450221626113  0.9997652083919379 1.0000513318870956]
+O vetor resultante é [1.         1.00000012 0.99999748 1.00002252 0.99989389 1.00028868 0.99953054 1.00045022 0.99976521 1.00005133]
 O primeiro "1." mostrado pelo Python, na verdade, é 0.999999998572852489
 A norma ideal é 10.0
 A norma do vetor resultante é 10.000000577588136
-Diferença entre as normas: 5.775881355418733e-07
+A norma 2 é: 5.759585864763275e-07
 --------------------------------------------------------------------------
 INICIANDO ITERAÇÃO PARA UMA MATRIZ DE HILBERT DE ORDEM 12
 O determinante vale 0.0000000000
-O vetor resultante é [0.9999999429965561 1.000007084854173  0.9997806729974179 1.0029496989415063 0.9786115232101207 1.0931018343504375 0.7426838293059917 1.462491811781697  0.4611633218672396 1.392445105106977  0.8376438609336166 1.0291213456208856]
+O vetor resultante é [0.99999994 1.00000708 0.99978067 1.0029497  0.97861152 1.09310183 0.74268383 1.46249181 0.46116332 1.39244511 0.83764386 1.02912135]
 O primeiro "1." mostrado pelo Python, na verdade, é 0.999999942996556146
 A norma ideal é 12.0
 A norma do vetor resultante é 12.760810213863056
-Diferença entre as normas: 0.7608102138630564
+A norma 2 é: 0.7608101499298183
 --------------------------------------------------------------------------
 INICIANDO ITERAÇÃO PARA UMA MATRIZ DE HILBERT DE ORDEM 13
 O determinante vale 0.0000000000
@@ -506,10 +500,8 @@ O vetor resultante é [ 1.          0.99999856  1.00008291  0.99827934  1.017821
 O primeiro "1." mostrado pelo Python, na verdade, é 1.000000002888341122
 A norma ideal é 13.0
 A norma do vetor resultante é 21.360293893532997
-Diferença entre as normas: 8.360293893532997
+A norma 2 é: 8.360293822258908
 ```
-
-* Dissertar sobre a continuação dos erros graves devido a arrendodamentos -> particularidade da Matriz de Hilbert
 
 * É evidente que os erros acumulados de arredondamento continuam maiores que o esperado (para n = 13, diferença de quase 10 vezes na norma dos vetores solução adquirida e solução ideal). Entretanto, é necessário levar em conta que a matriz de Hilbert contém números extremamente pequenos para dimensões maiores, ou seja, é esperado que, com um maior número de operações, pequenos erros acumulem-se e gerem efeitos formidavelmente negativos no final dos cálculos. 
   * Como um carro indo reto numa rodovia muito extensa: o veículo passa sobre uma falha no asfalto que o força a virar 3° para a esquerda. Caso o veículo mantenha-se nessa nova direção por tempo suficiente, o carro baterá no acostamento em algum momento.  

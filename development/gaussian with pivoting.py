@@ -74,7 +74,7 @@ def gauss(A):
 if __name__ == "__main__":
 
     old_stdout = sys.stdout
-    log_file = open("teste pivoting.log", "w")
+    log_file = open("teste norma 2.log", "w")
     sys.stdout = log_file
 
     print ("A precisão utilizada é {}".format(precision))
@@ -100,12 +100,12 @@ if __name__ == "__main__":
         if (vector_x.shape != (0,)):
             print("O primeiro \"1.\" mostrado pelo Python, na verdade, é {:.18f}".format(vector_x.view()[0]))
 
-            
             ones_vector = np.ones(n)
+            norm_type_2_vector = np.subtract(vector_x, ones_vector)
+
             print("A norma ideal é {}".format(np.dot(ones_vector, ones_vector)))
             print("A norma do vetor resultante é {}".format(np.dot(vector_x, vector_x)))
-            print("Diferença entre as normas: {}".format(np.dot(vector_x, vector_x) - np.dot(ones_vector, ones_vector)))
-        
+            print("A norma 2 é: {}".format(np.dot(norm_type_2_vector, norm_type_2_vector)))
     
     sys.stdout = old_stdout
     log_file.close
