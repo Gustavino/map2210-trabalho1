@@ -2,7 +2,7 @@
 
 ## Parte 1
 
-### a. Código, comentado, em Python para resolução de sistemas lineares pelo método da Eliminação de Gauss sem pivotamento.  
+> a. Código, comentado, em Python para resolução de sistemas lineares pelo método da Eliminação de Gauss sem pivotamento.  
   
   * Os comentários iniciados com "STEP" se referem ao algoritmo descrito no livro Numerical Analysis. Da mesma maneira, para manter conformidade com o idioma do livro-texto, diversos nomes de variáveis e funções estão em inglês.  
   * Em alguns pontos do código, é utilizado, para verificar se um número é zero, a função abs que entrega o módulo de um número (int, float).  
@@ -45,6 +45,7 @@ def backward_substitution(A):
 def gauss(A):                                                   # A é a matriz aumentada de Ax = B
     # n é a dimensão da matriz quadrada A, nxn, definida fora da função. Ou seja, n é o tamanho da matriz A não aumentada.
     n = len(A)
+
 
     for i in range(0, n):                                       # STEP 1. 
         pivot_row_index = find_first_non_null_pivot(A, i)
@@ -91,13 +92,13 @@ if __name__ == "__main__":
         print("The output vector is {}.".format(vector_x))
 ```  
 
-Nessa demonstração de código são utilizadas **10** casas decimais de precisão, através de uma variável global, na definição de um possível zero na diagonal principal. Essa particularidade é decisiva, pois, devido aos elementos da matriz de Hilbert, o processo de escalonamento gera números muito pequenos (próximos de zero, com arredondamento de +5 casas decimais), inclusive na diagonal principal. Esse último detalhe é o principal motivo por trás da Eliminação de Gauss com pivotamento: pivôs muitos pequenos geram grandes erros no cálculo (será detalhado no item b). Assim, dada a forma como matrizes de Hilbert produzem elementos pequenos, espera-se que o algoritmo acumule mais erros ao aumentar a ordem da matriz de Hilbert utilizada. 
+Nessa demonstração de código são utilizadas **10** casas decimais de precisão, através de uma variável global, na definição de um possível zero na diagonal principal. Essa particularidade é decisiva, pois, devido aos elementos da matriz de Hilbert, o processo de escalonamento gera números muito pequenos (próximos de zero, com arredondamento de +5 casas decimais), inclusive na diagonal principal. Esse último detalhe é o principal motivo por trás da Eliminação de Gauss com pivotamento: pivôs muitos pequenos geram grandes erros no cálculo. Assim, dada a forma como matrizes de Hilbert produzem elementos pequenos, espera-se que o algoritmo acumule mais erros ao aumentar a ordem da matriz de Hilbert utilizada. 
 
 ### Logs
 
-Nos logs abaixo é o utilizado um vetor diferença definido pela diferença entre a solução obtida e a solução exata (todos as componentes unitárias) na seguinte ordem: v - x, onde v é o vetor de componentes unitárias e x é o vetor solução (também chamado de "vetor resultante" nos logs).
-#### Log do processo com 10 casas decimais de precisão, para  2 <= n <= 7.
+#### Log do processo com 10 casas decimais de precisão, para  n = 2, ... , 7.  
 
+No log abaixo é o utilizado um vetor diferença definido pela diferença entre a solução obtida e a solução exata (todos as componentes unitárias) na seguinte ordem: v - x, onde v é o vetor de componentes unitárias e x é o vetor solução (também chamado de "vetor resultante" nos logs). 
 
 ```python  
 A precisão utilizada é 1e-10
@@ -201,7 +202,7 @@ A norma do vetor resultante é 12.650441152699086
 Diferença entre as normas: 0.6504411526990861
 --------------------------------------------------------------------------
 INICIANDO ITERAÇÃO PARA UMA MATRIZ DE HILBERT DE ORDEM 14
-O determinante vale -0.0000000000
+O determinante vale 0.0000000000
 O vetor resultante é [ 0.99999995  1.00000676  0.99976399  1.00364936  0.96887594  1.16381344
   0.43302049  2.33729775 -1.18460166  3.4700271  -0.89519084  1.94052343
   0.72812698  1.0346873 ]
@@ -222,17 +223,15 @@ Diferença entre as normas: 228.9988753089912
 ```
   
 
-**Vetor x solução**:  
-  * Sobre suas componentes finais: observando-se os vetores resultantes até a terceira iteração, sobre a matriz de ordem 6, fica claro que os problemas decorrentes do má condicionamento da matriz de Hilbert ainda não alteraram drasticamente os resultados. Entretanto, já nota-se uma diferença: a presença do "." após o número um, como em "1.", no vetor resultante indica a presença de arrendondamento em casas decimais muito distantes da vírgula (certamente após a décima casa decimal, que é o padrão de exibição dos valores de np.darray ou listas do Python).  
-  Dessa forma, da matriz de ordem 8 em diante, ficam claras as consequências dos arrendondamentos anteriores sobre o vetor solução.
+**Sobre o vetor x solução**:  
+* Acerca de suas componentes finais: observando-se os vetores resultantes até a terceira iteração, sobre a matriz de ordem 6, fica claro que os problemas decorrentes do má condicionamento da matriz de Hilbert ainda não alteraram drasticamente os resultados. Entretanto, já nota-se uma diferença: a presença do "." após o número um, como em "1.", no vetor resultante indica a presença de arrendondamento em casas decimais muito distantes da vírgula (certamente após a oitava casa decimal, que é o padrão de exibição dos valores de np.darray ou listas do Python).  
+Dessa forma, da matriz de ordem 8 em diante, ficam claras as consequências incovenientes dos arrendondamentos anteriores sobre o vetor solução.
 
-  * Sobre a norma: como consequência das alterações sobre as componentes, a norma do vetor x nunca é exatamenge igual a ideal. De acordo com os logs, a diferença entre as normas produzida pelo algoritmo e ideal varia desde um número extremamente pequeno (a ponto de ocorrer um _floating point overflow_) até 15.25 vezes a norma ideal para n=16. Ou seja, quanto mais aumenta-se a ordem da matriz, mais aumenta-se a presença do erro no algoritmo.  
+* Acerca de sua norma: como consequência das alterações sobre as componentes, a norma do vetor x nunca é exatamenge igual a ideal. De acordo com os logs, a diferença entre as normas produzida pelo algoritmo e ideal varia desde um número extremamente pequeno (a ponto de ocorrer um _floating point overflow_) até 15.25 vezes a norma ideal para n=16. Ou seja, quanto mais aumenta-se a ordem da matriz, mais aumenta-se a presença do erro no algoritmo.  
   
-### b. Código estendendo a solução do item _a_ com o processo de **pivotamento**.  
+>b. Código estendendo a solução do item _a_ com o processo de **pivotamento**.  
 
-* O código a seguir contém as mudanças necessárias ao pivotamento
-
-* 
+* O código a seguir contém as mudanças necessárias ao pivotamento: na busca do pivô da i-ésima linha, é feita uma busca linear pelo maior elemento entre os elementos de A[i][j], com **0 <= i <= n-1** e **i <= j <= n-1**. Se o pivô encontrado não estiver na linha i, há uma troca das linhas i e j e o determinante terá o seu sinal alterado no momento do cálculo atráves da multiplicação pela variável _determinant\_signal_. Além disso, as instruções para a realização de logs, como aqueles realizados no item a, foram deixadas no corpo do código, por isso as chamadas para _print()_.
 
 ```python
 
@@ -240,20 +239,10 @@ import sys
 import numpy as np
 from scipy import linalg
 
+# Configuração para gerar o log
 np.set_printoptions(precision=6, linewidth=200, suppress=True)
 
 precision = 0.0000000000000001
-
-def find_first_non_null_pivot(A, start):
-    """  Iterate over the first column searching for a bigger than zero pivot  """
-    pivot_row_index = start
-
-    for i in range(start, n):
-        if abs(A[i][start]) > precision:
-            pivot_row_index = i
-            break
-
-    return pivot_row_index
 
 def max_element_in_row(A, i):
     n = len(A)
@@ -283,9 +272,6 @@ def gauss(A):
     n = len(A)
     determinant_signal = 1
 
-    print("A matriz aumentada inicial A é: ")
-    print(A.view())
-
     for i in range(0, n):                                       
         max_pivot_row_index = max_element_in_row(A, i)
 
@@ -297,10 +283,6 @@ def gauss(A):
         if (max_pivot_row_index != i):             
             determinant_signal *= -1                 
             A[[i, max_pivot_row_index]] = A[[max_pivot_row_index, i]] 
-
-        print("")
-        print("Após a {}a verificação de possível troca: ".format(i+1))
-        print(A.view())
 
         for k in range(i + 1, n):
             m = -A[k][i] / A[i][i]
@@ -347,4 +329,195 @@ if __name__ == "__main__":
     
     sys.stdout = old_stdout
     log_file.close
+```  
+
+### Logs
+
+#### Log do processo com 16 casas decimais de precisão, para  n = 4, demonstrando um exemplo onde há troca de linhas no escalonamento da matriz de Hilbert.
+
+```python
+A precisão utilizada é 1e-16
+--------------------------------------------------------------------------
+INICIANDO ITERAÇÃO PARA UMA MATRIZ DE HILBERT DE ORDEM 4
+A matriz aumentada inicial A é: 
+[[1.         0.5        0.33333333 0.25       2.08333333]
+ [0.5        0.33333333 0.25       0.2        1.28333333]
+ [0.33333333 0.25       0.2        0.16666667 0.95      ]
+ [0.25       0.2        0.16666667 0.14285714 0.75952381]]
+
+Após a 1a verificação de troca, não houve troca de linhas: 
+[[1.         0.5        0.33333333 0.25       2.08333333]
+ [0.5        0.33333333 0.25       0.2        1.28333333]
+ [0.33333333 0.25       0.2        0.16666667 0.95      ]
+ [0.25       0.2        0.16666667 0.14285714 0.75952381]]
+*** Matriz no momento de troca da linha 2 ***
+[[1.         0.5        0.33333333 0.25       2.08333333]
+ [0.         0.08333333 0.08333333 0.075      0.24166667]
+ [0.         0.08333333 0.08888889 0.08333333 0.25555556]
+ [0.         0.075      0.08333333 0.08035714 0.23869048]]
+
+Após a 2a verificação de troca, houve troca entre as linhas 2 e 3: 
+[[1.         0.5        0.33333333 0.25       2.08333333]
+ [0.         0.08333333 0.08888889 0.08333333 0.25555556]
+ [0.         0.08333333 0.08333333 0.075      0.24166667]
+ [0.         0.075      0.08333333 0.08035714 0.23869048]]
+*** Matriz no momento de troca da linha 3 ***
+[[ 1.          0.5         0.33333333  0.25        2.08333333]
+ [ 0.          0.08333333  0.08888889  0.08333333  0.25555556]
+ [ 0.          0.         -0.00555556 -0.00833333 -0.01388889]
+ [ 0.          0.          0.00333333  0.00535714  0.00869048]]
+
+Após a 3a verificação de troca, houve troca entre as linhas 3 e 4: 
+[[ 1.          0.5         0.33333333  0.25        2.08333333]
+ [ 0.          0.08333333  0.08888889  0.08333333  0.25555556]
+ [ 0.          0.          0.00333333  0.00535714  0.00869048]
+ [ 0.          0.         -0.00555556 -0.00833333 -0.01388889]]
+
+Após a 4a verificação de troca, não houve troca de linhas: 
+[[1.         0.5        0.33333333 0.25       2.08333333]
+ [0.         0.08333333 0.08888889 0.08333333 0.25555556]
+ [0.         0.         0.00333333 0.00535714 0.00869048]
+ [0.         0.         0.         0.00059524 0.00059524]]
+O determinante vale 0.0000001653
+O vetor resultante é [1. 1. 1. 1.]
+O primeiro "1." mostrado pelo Python, na verdade, é 0.999999999999976796
+A norma ideal é 4.0
+A norma do vetor resultante é 4.000000000000034
+Diferença entre as normas: 3.375077994860476e-14
+``` 
+
+#### Log do processo com 16 casas decimais de precisão, exibindo a aplicação do algoritmo à uma matriz 4x4 com entradas aleatórias (np.random.rand).
+
+```python
+A precisão utilizada é 1e-16
+--------------------------------------------------------------------------
+INICIANDO ITERAÇÃO PARA UMA MATRIZ DE ORDEM 4 COM ENTRADAS ALEATÓRIAS
+A matriz aumentada inicial A é: 
+[[0.13446575 0.72418385 0.69022027 0.19263018 1.74150005]
+ [0.23314232 0.47563839 0.26706262 0.73001839 1.70586172]
+ [0.31962387 0.81546944 0.7618992  0.68640756 2.58340007]
+ [0.36404771 0.10594377 0.70583653 0.77379825 1.94962627]]
+
+*** Matriz no momento de troca da linha 1 ***
+[[0.13446575 0.72418385 0.69022027 0.19263018 1.74150005]
+ [0.23314232 0.47563839 0.26706262 0.73001839 1.70586172]
+ [0.31962387 0.81546944 0.7618992  0.68640756 2.58340007]
+ [0.36404771 0.10594377 0.70583653 0.77379825 1.94962627]]
+
+Após a 1a verificação de troca, houve troca entre as linhas 1 e 4: 
+[[0.36404771 0.10594377 0.70583653 0.77379825 1.94962627]
+ [0.23314232 0.47563839 0.26706262 0.73001839 1.70586172]
+ [0.31962387 0.81546944 0.7618992  0.68640756 2.58340007]
+ [0.13446575 0.72418385 0.69022027 0.19263018 1.74150005]]
+
+*** Matriz no momento de troca da linha 2 ***
+[[ 0.36404771  0.10594377  0.70583653  0.77379825  1.94962627]
+ [ 0.          0.4077902  -0.18496706  0.23446488  0.45728802]
+ [ 0.          0.72245373  0.14219415  0.007034    0.87168187]
+ [ 0.          0.68505214  0.42951038 -0.09318226  1.02138026]]
+
+Após a 2a verificação de troca, houve troca entre as linhas 2 e 3: 
+[[ 0.36404771  0.10594377  0.70583653  0.77379825  1.94962627]
+ [ 0.          0.72245373  0.14219415  0.007034    0.87168187]
+ [ 0.          0.4077902  -0.18496706  0.23446488  0.45728802]
+ [ 0.          0.68505214  0.42951038 -0.09318226  1.02138026]]
+
+*** Matriz no momento de troca da linha 3 ***
+[[ 0.36404771  0.10594377  0.70583653  0.77379825  1.94962627]
+ [ 0.          0.72245373  0.14219415  0.007034    0.87168187]
+ [ 0.          0.         -0.26522879  0.23049453 -0.03473426]
+ [ 0.          0.          0.29467765 -0.09985211  0.19482554]]
+
+Após a 3a verificação de troca, houve troca entre as linhas 3 e 4: 
+[[ 0.36404771  0.10594377  0.70583653  0.77379825  1.94962627]
+ [ 0.          0.72245373  0.14219415  0.007034    0.87168187]
+ [ 0.          0.          0.29467765 -0.09985211  0.19482554]
+ [ 0.          0.         -0.26522879  0.23049453 -0.03473426]]
+
+Após a 4a verificação de troca, não houve troca de linhas: 
+[[ 0.36404771  0.10594377  0.70583653  0.77379825  1.94962627]
+ [ 0.          0.72245373  0.14219415  0.007034    0.87168187]
+ [ 0.          0.          0.29467765 -0.09985211  0.19482554]
+ [ 0.          0.          0.          0.14062123  0.14062123]]
+O determinante vale -0.0108984923
+O vetor resultante é [1. 1. 1. 1.]
+O primeiro "1." mostrado pelo Python, na verdade, é 0.999999999999991340
+A norma ideal é 4.0
+A norma do vetor resultante é 3.9999999999999902
+Diferença entre as normas: -9.769962616701378e-15
 ```
+
+#### Log do processo com 16 casas decimais de precisão, para  n = 2, 4, ... , 12.
+```python
+A precisão utilizada é 1e-16
+--------------------------------------------------------------------------
+INICIANDO ITERAÇÃO PARA UMA MATRIZ DE HILBERT DE ORDEM 2
+O determinante vale 0.0833333333
+O vetor resultante é [1.0000000000000004 0.9999999999999993]
+O primeiro "1." mostrado pelo Python, na verdade, é 1.000000000000000444
+A norma ideal é 2.0
+A norma do vetor resultante é 1.9999999999999996
+Diferença entre as normas: -4.440892098500626e-16
+--------------------------------------------------------------------------
+INICIANDO ITERAÇÃO PARA UMA MATRIZ DE HILBERT DE ORDEM 4
+O determinante vale 0.0000001653
+O vetor resultante é [0.9999999999999768 1.000000000000256  0.9999999999993879 1.0000000000003963]
+O primeiro "1." mostrado pelo Python, na verdade, é 0.999999999999976796
+A norma ideal é 4.0
+A norma do vetor resultante é 4.000000000000034
+Diferença entre as normas: 3.375077994860476e-14
+--------------------------------------------------------------------------
+INICIANDO ITERAÇÃO PARA UMA MATRIZ DE HILBERT DE ORDEM 6
+O determinante vale 0.0000000000
+O vetor resultante é [0.9999999999990724 1.0000000000266975 0.9999999998182728 1.0000000004748553 0.9999999994739818 1.0000000002078646]
+O primeiro "1." mostrado pelo Python, na verdade, é 0.999999999999072409
+A norma ideal é 6.0
+A norma do vetor resultante é 6.000000000001489
+Diferença entre as normas: 1.4885870314174099e-12
+--------------------------------------------------------------------------
+INICIANDO ITERAÇÃO PARA UMA MATRIZ DE HILBERT DE ORDEM 8
+O determinante vale 0.0000000000
+O vetor resultante é [0.9999999999717035 1.0000000015083135 0.9999999803342513 1.000000106424826  0.999999713308501  1.0000004059917933 0.9999997108174259 1.0000000816638364]
+O primeiro "1." mostrado pelo Python, na verdade, é 0.999999999971703524
+A norma ideal é 8.0
+A norma do vetor resultante é 8.000000000041652
+Diferença entre as normas: 4.165201517025707e-11
+--------------------------------------------------------------------------
+INICIANDO ITERAÇÃO PARA UMA MATRIZ DE HILBERT DE ORDEM 10
+O determinante vale 0.0000000000
+O vetor resultante é [0.9999999985728525 1.0000001203304385 0.9999974848388027 1.0000225232616968 0.9998938911782738 1.000288677455108  0.9995305432724556 1.000450221626113  0.9997652083919379 1.0000513318870956]
+O primeiro "1." mostrado pelo Python, na verdade, é 0.999999998572852489
+A norma ideal é 10.0
+A norma do vetor resultante é 10.000000577588136
+Diferença entre as normas: 5.775881355418733e-07
+--------------------------------------------------------------------------
+INICIANDO ITERAÇÃO PARA UMA MATRIZ DE HILBERT DE ORDEM 12
+O determinante vale 0.0000000000
+O vetor resultante é [0.9999999429965561 1.000007084854173  0.9997806729974179 1.0029496989415063 0.9786115232101207 1.0931018343504375 0.7426838293059917 1.462491811781697  0.4611633218672396 1.392445105106977  0.8376438609336166 1.0291213456208856]
+O primeiro "1." mostrado pelo Python, na verdade, é 0.999999942996556146
+A norma ideal é 12.0
+A norma do vetor resultante é 12.760810213863056
+Diferença entre as normas: 0.7608102138630564
+--------------------------------------------------------------------------
+INICIANDO ITERAÇÃO PARA UMA MATRIZ DE HILBERT DE ORDEM 13
+O determinante vale 0.0000000000
+O vetor resultante é [ 1.          0.99999856  1.00008291  0.99827934  1.01782144  0.8930774   1.40220178  0.01120354  2.61360819 -0.73302435  2.17717888  0.54160844
+  1.07796391]
+O primeiro "1." mostrado pelo Python, na verdade, é 1.000000002888341122
+A norma ideal é 13.0
+A norma do vetor resultante é 21.360293893532997
+Diferença entre as normas: 8.360293893532997
+```
+
+* Dissertar sobre a continuação dos erros graves devido a arrendodamentos -> particularidade da Matriz de Hilbert
+
+* É evidente que os erros acumulados de arredondamento continuam maiores que o esperado (para n = 13, diferença de quase 10 vezes na norma dos vetores solução adquirida e solução ideal). Entretanto, é necessário levar em conta que a matriz de Hilbert contém números extremamente pequenos para dimensões maiores, ou seja, é esperado que, com um maior número de operações, pequenos erros acumulem-se e gerem efeitos formidavelmente negativos no final dos cálculos. 
+  * Como um carro indo reto numa rodovia muito extensa: o veículo passa sobre uma falha no asfalto que o força a virar 3° para a esquerda. Caso o veículo mantenha-se nessa nova direção por tempo suficiente, o carro baterá no acostamento em algum momento.  
+  Dado esse efeito a longo prazo, o intuito de medidas numéricas, como a troca de linhas em busca do maior pivô, seria como tentar diminuir a variação do ângulo de direção que o carro sofre. Por exemplo, uma troca de linhas poderia diminuir a nova direção para 0.75° a esquerda da direção original e, dessa forma, talvez desse tempo da rodovia terminar sem o carro bater no acostamento.
+
+* De acordo com os logs, a matriz de Hilbert se aproxima cada vez mais da **singularidade** conforme sua dimensão aumenta. Essa percepção torna-se verdadeira ao levar em conta que os elementos da diagonal principal só decrescem em tamanho, sempre menores que 1, conforme o crescimento da dimensão.
+
+## Parte 2
+
+
+

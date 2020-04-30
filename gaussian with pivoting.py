@@ -3,20 +3,9 @@ import sys
 import numpy as np
 from scipy import linalg
 
-np.set_printoptions(precision=16, linewidth=350, suppress=True)
+np.set_printoptions(precision=8, linewidth=150, suppress=True)
 
 precision = 0.0000000000000001
-
-def find_first_non_null_pivot(A, start):
-    """  Iterate over the first column searching for a bigger than zero pivot  """
-    pivot_row_index = start
-
-    for i in range(start, n):
-        if abs(A[i][start]) > precision:
-            pivot_row_index = i
-            break
-
-    return pivot_row_index
 
 def max_element_in_row(A, i):
     n = len(A)
@@ -57,12 +46,18 @@ def gauss(A):
             return np.array(object=[])
 
         if (max_pivot_row_index != i):
+            # print("")
+            # print("*** Matriz no momento de troca da linha {} ***".format(i+1))
+            # print(A.view())
             determinant_signal *= -1                              
-            A[[i, max_pivot_row_index]] = A[[max_pivot_row_index, i]] 
-
-        # print("")
-        # print("Após a {}a verificação de possível troca: ".format(i+1))
-        # print(A.view())
+            A[[i, max_pivot_row_index]] = A[[max_pivot_row_index, i]]
+            # print("")
+            # print("Após a {}a verificação de troca, houve troca entre as linhas {} e {}: ".format(i+1, i+1, max_pivot_row_index+1))
+            # print(A.view())
+        # else:
+        #     print("")
+        #     print("Após a {}a verificação de troca, não houve troca de linhas: ".format(i+1))
+        #     print(A.view())
 
         for k in range(i + 1, n):
             m = -A[k][i] / A[i][i]
@@ -79,16 +74,17 @@ def gauss(A):
 if __name__ == "__main__":
 
     old_stdout = sys.stdout
-    log_file = open("teste massivo pivoting.log", "w")
+    log_file = open("teste pivoting.log", "w")
     sys.stdout = log_file
 
     print ("A precisão utilizada é {}".format(precision))
 
-    for n in range(2, 13, 2):
-    #for n in range(1):
-    #   n = 14
+    # for n in range(2, 13, 2):
+    for n in range(1):
+        n = 13
         hilbert_matrix = linalg.hilbert(n) # Generating a nxn Hilbert matrix
-        
+        #hilbert_matrix = np.random.rand(n, n)
+
         vector_b = np.array([hilbert_matrix[i].sum() for i in range (0, len(hilbert_matrix))]) # Generating vector b, the sum of Hilbert matrices rows
         vector_b = np.vstack(vector_b)
         
