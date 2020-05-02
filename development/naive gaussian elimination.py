@@ -3,8 +3,10 @@ import sys
 import numpy as np
 from scipy import linalg
 import math
-
-precision = 0.0000000000000001
+import matplotlib.pyplot as plt
+##############################
+precision = 0.0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000001
+norm_error_list = []
 
 def find_first_non_null_pivot(A, start):
     """  Iterate over the first column searching for a bigger than zero pivot  """
@@ -65,12 +67,12 @@ def gauss(A):                                                   # A is the augme
 if __name__ == "__main__":
 
     old_stdout = sys.stdout
-    log_file = open("naive gaussian para pegar a norma 2.log", "w")
+    log_file = open("naive gaussian para plotar o determinante.log", "w")
     sys.stdout = log_file
 
     print ("A precisão utilizada é {}".format(precision))
 
-    for n in range(2,17, 2):
+    for n in range(2,50, 1):
         hilbert_matrix = linalg.hilbert(n) # Generating a nxn Hilbert matrix
         
         vector_b = np.array([hilbert_matrix[i].sum() for i in range (0, len(hilbert_matrix))]) # Generating vector b, the sum of Hilbert matrices rows
@@ -86,17 +88,22 @@ if __name__ == "__main__":
         
 
         if (vector_x.shape != (0,)):
+            
+            
+            
             #if (abs(vector_x[0]) > precision):
             print("O primeiro \"1.\" mostrado pelo Python, na verdade, é {:.18f}".format(vector_x[0]))
 
             
-            
+         
             ones_vector = np.ones(n)
             norm_type_2_vector = np.subtract(vector_x, ones_vector)
             
             print("A norma ideal é {}".format(np.dot(ones_vector, ones_vector)))
             print("A norma do vetor resultante é {}".format(np.dot(vector_x, vector_x)))
-            print("A norma 2 é: {}".format(np.dot(norm_type_2_vector, norm_type_2_vector)))
+            norm_2 = np.dot(norm_type_2_vector, norm_type_2_vector)
+            norm_error_list.append(norm_2)
+            print("A norma 2 é: {}".format(norm_2))
             #print("Diferença entre as normas: {}".format(np.dot(vector_x, vector_x) - np.dot(ones_vector, ones_vector)))
 
             #subtraction = np.subtract(ones_vector, vector_x)
@@ -106,5 +113,17 @@ if __name__ == "__main__":
             #print("O vetor diferença é {}".format(subtraction))
         
     
+    fig, ax1 = plt.subplots(1,1)
+
+    #ax1.set_title("Determinant value")
+    ax1.set_ylabel("Error value")
+    ax1.set_xlabel("Hilbert matrix dimension")
+
+    ax1.plot(range(len(norm_error_list)), norm_error_list, linestyle="-", linewidth=0.5)
+    
+
+    #fig.savefig('figure.png')
+    plt.show()
+
     sys.stdout = old_stdout
     log_file.close

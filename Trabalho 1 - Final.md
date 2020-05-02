@@ -225,6 +225,9 @@ Diferença entre as normas: 228.9988753089912
 Dessa forma, da matriz de ordem 8 em diante, ficam claras as consequências incovenientes dos arrendondamentos anteriores sobre o vetor solução.
 
 * Acerca de sua norma: como consequência das alterações sobre as componentes, a norma do vetor x nunca é exatamenge igual a ideal. De acordo com os logs, a diferença entre as normas produzida pelo algoritmo e ideal varia desde um número extremamente pequeno (a ponto de ocorrer um _floating point overflow_) até 15.25 vezes a norma ideal para n=16. Ou seja, quanto mais aumenta-se a ordem da matriz, mais aumenta-se a presença do erro no algoritmo.  
+
+### Gráfico da norma 2. Quanto maior, maior o erro.
+![alt text]()
   
 >b. Código estendendo a solução do item _a_ com o processo de **pivotamento**.  
 
