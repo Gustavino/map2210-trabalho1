@@ -226,12 +226,10 @@ Dessa forma, da matriz de ordem 8 em diante, ficam claras as consequências inco
 
 * Acerca de sua norma: como consequência das alterações sobre as componentes, a norma do vetor x nunca é exatamenge igual a ideal. De acordo com os logs, a diferença entre as normas produzida pelo algoritmo e ideal varia desde um número extremamente pequeno (a ponto de ocorrer um _floating point overflow_) até 15.25 vezes a norma ideal para n=16. Ou seja, quanto mais aumenta-se a ordem da matriz, mais aumenta-se a presença do erro no algoritmo.  
 
-### Gráfico da norma 2. Quanto maior, maior o erro.
-!["Naive Gauss error"](development/graphs/error%20gaussian%20with%20pivoting.png?raw=true)
+### Gráfico da norma 2. Quanto maior o valor no eixo y, maior o erro.  
 
-"Naive Gauss error"
+!["Naive Gaussian elimination error"](development/graphs/error%20naive%20gaussian.png?raw=true)  
 
-  
 >b. Código estendendo a solução do item _a_ com o processo de **pivotamento**.  
 
 * O código a seguir contém as mudanças necessárias ao pivotamento: na procura do pivô da i-ésima linha, é feita uma busca linear pelo maior elemento entre os elementos A[i][j], com **0 <= i <= n-1** e **i <= j <= n-1**. Se o pivô encontrado não estiver na linha i, há uma troca das linhas i e a linha com o maior pivô. Assim, o determinante terá o seu sinal alterado no momento de seu cálculo atráves da multiplicação pela variável _determinant\_signal_. 
@@ -498,7 +496,7 @@ Após a 6a verificação de troca, houve troca entre as linhas 6 e 7:
 Após a 7a verificação de troca, não houve troca de linhas: 
 [[1.         0.5        0.33333333 0.25       0.2        0.16666667 0.14285714 2.59285714]
  [0.         0.08333333 0.08333333 0.075      0.06666667 0.05952381 0.05357143 0.42142857]
- [0.         0.         0.00992063 0.01587302 0.01904762 0.02061431 0.0212585  0.08671408]
+ [0.         0.   ### Gráfico da norma 2. Quanto maior o valor no eixo y, maior o erro.      0.00992063 0.01587302 0.01904762 0.02061431 0.0212585  0.08671408]
  [0.         0.         0.         0.00019841 0.0004329  0.0006442  0.00081763 0.00209314]
  [0.         0.         0.         0.         0.00006926 0.00018038 0.00030525 0.00055489]
  [0.         0.         0.         0.         0.         0.00000161 0.00000491 0.00000652]
@@ -711,6 +709,10 @@ O número de troca de linhas foi: 10
   Dado esse efeito a longo prazo, o intuito de medidas numéricas, como a troca de linhas em busca do maior pivô, seria como tentar diminuir a variação do ângulo de direção que o carro sofre. Por exemplo, uma troca de linhas poderia diminuir a nova direção para 0.75° a esquerda da direção original e, dessa forma, talvez desse tempo da rodovia terminar sem o carro bater no acostamento.
 
 * De acordo com os logs, a matriz de Hilbert se aproxima cada vez mais da **singularidade** conforme sua dimensão aumenta. Essa percepção torna-se verdadeira ao levar em conta que os elementos da diagonal principal só decrescem em tamanho, sempre menores que 1, conforme o crescimento da dimensão.
+
+### Gráfico da norma 2. Quanto maior o valor no eixo y, maior o erro.  
+
+!["Gaussian elimination with pivoting error"](development/graphs/error%20gaussian%20with%20pivoting.png?raw=true)  
 
 ## Parte 2
 
