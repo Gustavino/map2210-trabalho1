@@ -227,10 +227,9 @@ Dessa forma, da matriz de ordem 8 em diante, ficam claras as consequências inco
 * Acerca de sua norma: como consequência das alterações sobre as componentes, a norma do vetor x nunca é exatamenge igual a ideal. De acordo com os logs, a diferença entre as normas produzida pelo algoritmo e ideal varia desde um número extremamente pequeno (a ponto de ocorrer um _floating point overflow_) até 15.25 vezes a norma ideal para n=16. Ou seja, quanto mais aumenta-se a ordem da matriz, mais aumenta-se a presença do erro no algoritmo.  
 
 ### Gráfico da norma 2. Quanto maior, maior o erro.
-![alt text](https://raw.githubusercontent.com/Gustavino/map2210-trabalho1/master/development/graphs/error%20gaussian%20with%20pivoting.png?token=AEDDRBHZNSWNRTSSNYVN4PK6VXOBO "Naive Gauss error")
+!["Naive Gauss error"](development/graphs/error%20gaussian%20with%20pivoting.png?raw=true)
 
-![alt text](development/graphs/error gaussian with pivoting.png "Naive Gauss error")
-
+"Naive Gauss error"
 
   
 >b. Código estendendo a solução do item _a_ com o processo de **pivotamento**.  
