@@ -4,10 +4,6 @@ from scipy import linalg
 from sklearn import datasets
  
 def cholesky(A, b):
-    """Performs a Cholesky decomposition of A, which must 
-    be a symmetric and positive definite matrix. The function
-    returns the lower variant triangular matrix, L."""
-
     n = len(A)
     L = np.zeros((n,n))
 
@@ -17,6 +13,9 @@ def cholesky(A, b):
             left_elements_sum = sum(L[i][j] * L[k][j] for j in range(k)) # Nem roda para a primeira iteracao
             
             if (i == k): # Elementos da diagonal
+                if A[i][i] - left_elements_sum < 0:
+                    print("A[i][i] eh {:.19f}".format(A[i][i]))
+                    print("left_elements_sum eh {:.19f}".format(left_elements_sum))
                 L[i][k] = sqrt(A[i][i] - left_elements_sum)
             else:
                 L[i][k] = (A[i][k] - left_elements_sum) / L[k][k]
@@ -31,8 +30,6 @@ def cholesky(A, b):
         sum_y = sum(L[i][j] * y_vector[j] for j in range(i))
         y_vector[i] = (b[i] - sum_y) / L[i][i]
 
-    print("{}".format(y_vector))
-
     # STEP 10
     x_vector = np.array(np.zeros(n))
 
@@ -41,9 +38,8 @@ def cholesky(A, b):
     # STEP 11
     for i in range(n-2, -1, -1):
         sum_x = sum(L[j][i] * x_vector[j] for j in range(i+1, n))
-        print("a soma para i igual a {} eh {}".format(i+1, sum_x))
         x_vector[i] = (y_vector[i] - sum_x) / L[i][i]
-        print(x_vector[i])
+
 
 
     # STEP 12
@@ -56,14 +52,14 @@ A = np.array([[4, 2, 2], [2, 6, 2], [2, 2, 5]])
 # [-5, 0, 11]])
 
 
-dimension = 3
+dimension = 18
 # reference_matrix = A
 reference_matrix = linalg.hilbert(dimension)
 # reference_matrix = datasets.make_spd_matrix(dimension)
 
 vector_b = np.array([reference_matrix[i].sum() for i in range (0, len(reference_matrix))]) # Generating vector b, the sum of Hilbert matrices rows
 # vector_b = [0, 1, 0]
-L = cholesky(reference_matrix, vector_b)
+vector_x = cholesky(reference_matrix, vector_b)
 
 # print("Matriz referência:")
 # print(augmented_hilbert_matrix)
@@ -73,8 +69,11 @@ L = cholesky(reference_matrix, vector_b)
 
 # print(linalg.cholesky(reference_matrix))
 
-print("L transposta:")
-print(np.transpose(L))
+# print("L transposta:")
+# print(np.transpose(L))
+
+print("vector_x:")
+print(vector_x)
 
 
 

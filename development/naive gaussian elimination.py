@@ -11,6 +11,7 @@ norm_error_list = []
 def find_first_non_null_pivot(A, start):
     """  Iterate over the first column searching for a bigger than zero pivot  """
     pivot_row_index = start
+    n = len(A)
 
     for i in range(start, n):
         if abs(A[i][start]) > precision:

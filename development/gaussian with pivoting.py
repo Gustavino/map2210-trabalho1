@@ -4,7 +4,7 @@ import numpy as np
 from scipy import linalg
 from decimal import Decimal
 
-np.set_printoptions(precision=8, linewidth=150, suppress=True)
+np.set_printoptions(precision=6, linewidth=300, suppress=True)
 
 precision = 0.0000000000000001
 
@@ -97,11 +97,13 @@ if __name__ == "__main__":
 
     print ("A precisão utilizada é {}".format(precision))
 
-    for n in range(2, 7, 2):
+    for n in range(14, 15, 2):
     # for n in range(1):
     #     n = 7
         hilbert_matrix = linalg.hilbert(n) # Generating a nxn Hilbert matrix
         # hilbert_matrix = np.random.rand(n, n)
+
+        print(hilbert_matrix)
 
         vector_b = np.array([hilbert_matrix[i].sum() for i in range (0, len(hilbert_matrix))]) # Generating vector b, the sum of Hilbert matrices rows
         vector_b = np.vstack(vector_b)

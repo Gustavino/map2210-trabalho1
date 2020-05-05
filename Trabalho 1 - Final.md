@@ -4,7 +4,7 @@
 
 > a. Código, comentado, em Python para resolução de sistemas lineares pelo método da Eliminação de Gauss sem pivotamento.  
   
-  * Os comentários iniciados com "STEP" se referem ao algoritmo descrito no livro Numerical Analysis. Da mesma maneira, para manter conformidade com o idioma do livro-texto, diversos nomes de variáveis e funções estão em inglês.  
+  * Os comentários iniciados com "STEP" se referem ao algoritmo descrito no livro Numerical Analysis. Da mesma maneira, para manter conformidade com o idioma do livro-texto, diversos nomes de variáveis e funções estão em inglês (assim como algumas docstrings, descrições no início de funções).  
   * Em alguns pontos do código é utilizada, para verificar se um número é zero, a função _abs_, que entrega o módulo de um número (int, float).  
     * Exemplo: 
     ```python  
@@ -21,6 +21,7 @@ precision = 0.0000000000000001
 def find_first_non_null_pivot(A, start):
     """  Iterate over the first column searching for a bigger than zero pivot  """
     pivot_row_index = start
+    n = len(A)
 
     for i in range(start, n):
         if abs(A[i][start]) > precision:
@@ -496,7 +497,7 @@ Após a 6a verificação de troca, houve troca entre as linhas 6 e 7:
 Após a 7a verificação de troca, não houve troca de linhas: 
 [[1.         0.5        0.33333333 0.25       0.2        0.16666667 0.14285714 2.59285714]
  [0.         0.08333333 0.08333333 0.075      0.06666667 0.05952381 0.05357143 0.42142857]
- [0.         0.   ### Gráfico da norma 2. Quanto maior o valor no eixo y, maior o erro.      0.00992063 0.01587302 0.01904762 0.02061431 0.0212585  0.08671408]
+ [0.         0.         0.00992063 0.01587302 0.01904762 0.02061431 0.0212585  0.08671408]
  [0.         0.         0.         0.00019841 0.0004329  0.0006442  0.00081763 0.00209314]
  [0.         0.         0.         0.         0.00006926 0.00018038 0.00030525 0.00055489]
  [0.         0.         0.         0.         0.         0.00000161 0.00000491 0.00000652]
@@ -716,5 +717,232 @@ O número de troca de linhas foi: 10
 
 ## Parte 2
 
+> Implementação do algoritmo de decomposição de Cholesky, como escrito no livro Numerical Analysis, em Python:
+
+```python
+from math import sqrt
+import numpy as np
+from scipy import linalg
+ 
+def cholesky(A, b):
+    n = len(A)
+    L = np.zeros((n,n))
+
+    # Decomposição de Cholesky 
+    for i in range(n):
+        for k in range(i+1):
+            left_elements_sum = sum(L[i][j] * L[k][j] for j in range(k)) # Nem roda para a primeira iteracao
+            
+            if (i == k): # Elementos da diagonal
+                L[i][k] = sqrt(A[i][i] - left_elements_sum)
+            else:
+                L[i][k] = (A[i][k] - left_elements_sum) / L[k][k]
+
+    y_vector = np.array(np.zeros(n))
+
+    # STEP 8
+    y_vector[0] = b[0] / L[0][0]
+
+    # STEP 9 - Ly = b
+    for i in range (1, n): 
+        sum_y = sum(L[i][j] * y_vector[j] for j in range(i))
+        y_vector[i] = (b[i] - sum_y) / L[i][i]
+
+    # STEP 10
+    x_vector = np.array(np.zeros(n))
+
+    x_vector[-1] = y_vector[-1] / L[-1][-1]
+
+    # STEP 11 - Ltx = y
+    for i in range(n-2, -1, -1):
+        sum_x = sum(L[j][i] * x_vector[j] for j in range(i+1, n))
+        x_vector[i] = (y_vector[i] - sum_x) / L[i][i]
+
+    # STEP 12
+    return x_vector
+```
+
+* O algoritmo de Cholesky implementado transforma uma matriz A em uma matriz L, que, após operações de substituição (com o uso de sua transposta), devolve um vetor, solução, x. As principais vantagens desse procedimentos são a velocidade de execução e a precisão que é mantida.
+    * Velocidade de execução: o termo dominante da fatorização de Cholesky é _1/6\*n³_. Para efeito de comparação, a velocidade do Naive Gauss é proporcinal a _1/3\*n³_. Ou seja, em uma análise não-assintótica, Cholesky é duas vezes mais rápido que o Naive Gauss.
+    * Precisão: dado que as únicas divisões efetuadas no algoritmo são feitas por números da diagonal principal, que, pelas propriedades das matrizes SPD (symmetric, positive and definite), são sempre os maiores da matriz, há uma tendência de não gerar números que explodem em crescimento após a operação.
+
+### Logs
+
+#### Log comparando Naive Gauss, Cholesky e numpy.linalg.solve na resolução de matrizes de Hilbert
+```python
+A precisão utilizada é 1e-16
+--------------------------------------------------------------------------
+INICIANDO ITERAÇÃO PARA UMA MATRIZ DE HILBERT DE ORDEM 1
+O erro da Eliminação Gaussiana sem pivotamento é 0.0
+O erro da resolução com matrizes fatoradas por Cholesky é 0.0
+O erro da biblioteca NumPy, através do np.linalg.solve, é 0.0
+--------------------------------------------------------------------------
+INICIANDO ITERAÇÃO PARA UMA MATRIZ DE HILBERT DE ORDEM 2
+O erro da Eliminação Gaussiana sem pivotamento é 8.005932084973442e-16
+O erro da resolução com matrizes fatoradas por Cholesky é 8.95090418262362e-16
+O erro da biblioteca NumPy, através do np.linalg.solve, é 8.005932084973442e-16
+--------------------------------------------------------------------------
+INICIANDO ITERAÇÃO PARA UMA MATRIZ DE HILBERT DE ORDEM 3
+O erro da Eliminação Gaussiana sem pivotamento é 1.7634731639015542e-14
+O erro da resolução com matrizes fatoradas por Cholesky é 8.3820000221454525e-16
+O erro da biblioteca NumPy, através do np.linalg.solve, é 1.3516024908118682e-14
+--------------------------------------------------------------------------
+INICIANDO ITERAÇÃO PARA UMA MATRIZ DE HILBERT DE ORDEM 4
+O erro da Eliminação Gaussiana sem pivotamento é 7.555898631878062e-13
+O erro da resolução com matrizes fatoradas por Cholesky é 2.9489011596635683e-13
+O erro da biblioteca NumPy, através do np.linalg.solve, é 9.543859542259525e-13
+--------------------------------------------------------------------------
+INICIANDO ITERAÇÃO PARA UMA MATRIZ DE HILBERT DE ORDEM 5
+O erro da Eliminação Gaussiana sem pivotamento é 3.4726644211552867e-12
+O erro da resolução com matrizes fatoradas por Cholesky é 6.350949804677493e-12
+O erro da biblioteca NumPy, através do np.linalg.solve, é 1.7400885594819817e-12
+--------------------------------------------------------------------------
+INICIANDO ITERAÇÃO PARA UMA MATRIZ DE HILBERT DE ORDEM 6
+O erro da Eliminação Gaussiana sem pivotamento é 6.164839936768172e-10
+O erro da resolução com matrizes fatoradas por Cholesky é 1.221549333506457e-09
+O erro da biblioteca NumPy, através do np.linalg.solve, é 1.0652555092866373e-09
+--------------------------------------------------------------------------
+INICIANDO ITERAÇÃO PARA UMA MATRIZ DE HILBERT DE ORDEM 7
+O erro da Eliminação Gaussiana sem pivotamento é 2.2290975050937107e-08
+O erro da resolução com matrizes fatoradas por Cholesky é 2.1731152578348703e-08
+O erro da biblioteca NumPy, através do np.linalg.solve, é 3.751318450290021e-08
+--------------------------------------------------------------------------
+INICIANDO ITERAÇÃO PARA UMA MATRIZ DE HILBERT DE ORDEM 8
+O erro da Eliminação Gaussiana sem pivotamento é 4.515098799979707e-07
+O erro da resolução com matrizes fatoradas por Cholesky é 2.7898483285077586e-07
+O erro da biblioteca NumPy, através do np.linalg.solve, é 4.944033795675855e-07
+--------------------------------------------------------------------------
+INICIANDO ITERAÇÃO PARA UMA MATRIZ DE HILBERT DE ORDEM 9
+O erro da Eliminação Gaussiana sem pivotamento é 1.638830755145328e-05
+O erro da resolução com matrizes fatoradas por Cholesky é 5.9934486699236576e-05
+O erro da biblioteca NumPy, através do np.linalg.solve, é 3.0371306931003123e-05
+--------------------------------------------------------------------------
+INICIANDO ITERAÇÃO PARA UMA MATRIZ DE HILBERT DE ORDEM 10
+O erro da Eliminação Gaussiana sem pivotamento é 0.0008408643847455104
+O erro da resolução com matrizes fatoradas por Cholesky é 0.0001297626569700117
+O erro da biblioteca NumPy, através do np.linalg.solve, é 0.0006260495736752984
+--------------------------------------------------------------------------
+INICIANDO ITERAÇÃO PARA UMA MATRIZ DE HILBERT DE ORDEM 11
+O erro da Eliminação Gaussiana sem pivotamento é 0.007885381408015743
+O erro da resolução com matrizes fatoradas por Cholesky é 0.01179585904866715
+O erro da biblioteca NumPy, através do np.linalg.solve, é 0.02419196620654922
+--------------------------------------------------------------------------
+INICIANDO ITERAÇÃO PARA UMA MATRIZ DE HILBERT DE ORDEM 12
+O erro da Eliminação Gaussiana sem pivotamento é 0.8064992831151371
+O erro da resolução com matrizes fatoradas por Cholesky é 0.7403411720899308
+O erro da biblioteca NumPy, através do np.linalg.solve, é 1.199575129508879
+```
+
+### Gráfico comparando os erros do processo descrito no log acima.
+!["Error comparision - Hilbert, n < 13"](development/graphs/naive%20gauss%20vs%20cholesky%20vs%20linalg.solve%20-%20error%20.png?raw=true)  
 
 
+* Para matrizes de Hilbert de dimensão n >= 13, o seu mal condicionamento faz com que a matriz deixe de ser positiva definida. Dessa forma, o fatoramento pelo método de Cholesky torna-se impossível.
+
+```python
+>> np.linalg.cholesky(linalg.hilbert(13))
+
+Traceback (most recent call last):
+  File "<stdin>", line 1, in <module>
+  File "<__array_function__ internals>", line 6, in cholesky
+  File "/home/gus-araujo/.local/lib/python3.7/site-packages/numpy/linalg/linalg.py", line 755, in cholesky
+    r = gufunc(a, signature=signature, extobj=extobj)
+  File "/home/gus-araujo/.local/lib/python3.7/site-packages/numpy/linalg/linalg.py", line 100, in _raise_linalgerror_nonposdef
+    raise LinAlgError("Matrix is not positive definite")
+numpy.linalg.LinAlgError: Matrix is not positive definite
+```
+
+ > \>\> np.linalg.cholesky(linalg.hilbert(13))  
+ > **numpy.linalg.LinAlgError: Matrix is not positive definite**
+
+
+#### Log exibindo o tempo gasto em cada iteração por Naive Gauss e Cholesky. Além disso, seus erros também são exibidos, utilizando o linalg.solve como referência para comparação.
+
+```python
+A precisão utilizada é 1e-16
+--------------------------------------------------------------------------
+INICIANDO ITERAÇÃO PARA UMA MATRIZ DE ORDEM 1
+O erro da Eliminação Gaussiana sem pivotamento é 0.0
+O erro da resolução com matrizes fatoradas por Cholesky é 0.0
+--- TEMPO GASTO EM CADA SOLUÇÃO ---
+Tempo gasto pelo Naive Gauss nessa solução foi 0.000s
+Tempo gasto pelo método de Cholesky nessa solução foi 0.000s
+--------------------------------------------------------------------------
+INICIANDO ITERAÇÃO PARA UMA MATRIZ DE ORDEM 21
+O erro da Eliminação Gaussiana sem pivotamento é 8.130367573911198e-14
+O erro da resolução com matrizes fatoradas por Cholesky é 3.21964150263472e-12
+--- TEMPO GASTO EM CADA SOLUÇÃO ---
+Tempo gasto pelo Naive Gauss nessa solução foi 0.007s
+Tempo gasto pelo método de Cholesky nessa solução foi 0.004s
+--------------------------------------------------------------------------
+INICIANDO ITERAÇÃO PARA UMA MATRIZ DE ORDEM 41
+O erro da Eliminação Gaussiana sem pivotamento é 5.319231748110063e-12
+O erro da resolução com matrizes fatoradas por Cholesky é 8.561180755472533e-09
+--- TEMPO GASTO EM CADA SOLUÇÃO ---
+Tempo gasto pelo Naive Gauss nessa solução foi 0.049s
+Tempo gasto pelo método de Cholesky nessa solução foi 0.027s
+--------------------------------------------------------------------------
+INICIANDO ITERAÇÃO PARA UMA MATRIZ DE ORDEM 61
+O erro da Eliminação Gaussiana sem pivotamento é 2.1534852138452376e-12
+O erro da resolução com matrizes fatoradas por Cholesky é 5.412146048481012e-09
+--- TEMPO GASTO EM CADA SOLUÇÃO ---
+Tempo gasto pelo Naive Gauss nessa solução foi 0.122s
+Tempo gasto pelo método de Cholesky nessa solução foi 0.051s
+--------------------------------------------------------------------------
+INICIANDO ITERAÇÃO PARA UMA MATRIZ DE ORDEM 81
+O erro da Eliminação Gaussiana sem pivotamento é 8.042962711608777e-13
+O erro da resolução com matrizes fatoradas por Cholesky é 1.2722791867059034e-10
+--- TEMPO GASTO EM CADA SOLUÇÃO ---
+Tempo gasto pelo Naive Gauss nessa solução foi 0.247s
+Tempo gasto pelo método de Cholesky nessa solução foi 0.118s
+--------------------------------------------------------------------------
+INICIANDO ITERAÇÃO PARA UMA MATRIZ DE ORDEM 101
+O erro da Eliminação Gaussiana sem pivotamento é 1.0850083192216472e-11
+O erro da resolução com matrizes fatoradas por Cholesky é 1.4944549890304308e-08
+--- TEMPO GASTO EM CADA SOLUÇÃO ---
+Tempo gasto pelo Naive Gauss nessa solução foi 0.450s
+Tempo gasto pelo método de Cholesky nessa solução foi 0.212s
+--------------------------------------------------------------------------
+INICIANDO ITERAÇÃO PARA UMA MATRIZ DE ORDEM 121
+O erro da Eliminação Gaussiana sem pivotamento é 1.4929345912857306e-12
+O erro da resolução com matrizes fatoradas por Cholesky é 1.1190002615964225e-09
+--- TEMPO GASTO EM CADA SOLUÇÃO ---
+Tempo gasto pelo Naive Gauss nessa solução foi 0.809s
+Tempo gasto pelo método de Cholesky nessa solução foi 0.369s
+--------------------------------------------------------------------------
+INICIANDO ITERAÇÃO PARA UMA MATRIZ DE ORDEM 141
+O erro da Eliminação Gaussiana sem pivotamento é 1.6100897513658367e-12
+O erro da resolução com matrizes fatoradas por Cholesky é 6.6843383783108016e-09
+--- TEMPO GASTO EM CADA SOLUÇÃO ---
+Tempo gasto pelo Naive Gauss nessa solução foi 1.193s
+Tempo gasto pelo método de Cholesky nessa solução foi 0.618s
+--------------------------------------------------------------------------
+INICIANDO ITERAÇÃO PARA UMA MATRIZ DE ORDEM 161
+O erro da Eliminação Gaussiana sem pivotamento é 7.862319672234349e-12
+O erro da resolução com matrizes fatoradas por Cholesky é 4.538003683711476e-08
+--- TEMPO GASTO EM CADA SOLUÇÃO ---
+Tempo gasto pelo Naive Gauss nessa solução foi 1.723s
+Tempo gasto pelo método de Cholesky nessa solução foi 0.821s
+--------------------------------------------------------------------------
+INICIANDO ITERAÇÃO PARA UMA MATRIZ DE ORDEM 181
+O erro da Eliminação Gaussiana sem pivotamento é 5.3231677760402715e-12
+O erro da resolução com matrizes fatoradas por Cholesky é 9.706022397945798e-09
+--- TEMPO GASTO EM CADA SOLUÇÃO ---
+Tempo gasto pelo Naive Gauss nessa solução foi 2.485s
+Tempo gasto pelo método de Cholesky nessa solução foi 1.196s
+--------------------------------------------------------------------------
+INICIANDO ITERAÇÃO PARA UMA MATRIZ DE ORDEM 201
+O erro da Eliminação Gaussiana sem pivotamento é 1.8526202989707152e-10
+O erro da resolução com matrizes fatoradas por Cholesky é 1.3089628204472875e-05
+--- TEMPO GASTO EM CADA SOLUÇÃO ---
+Tempo gasto pelo Naive Gauss nessa solução foi 3.301s
+Tempo gasto pelo método de Cholesky nessa solução foi 1.580s
+```
+
+### Gráfico comparando o tempo gasto pelo Naive Gauss e por Cholesky para transformarem matrizes SPD (symmetric, positive and definite) de dimensão até 200.
+
+!["Time elapsed - Naive Gauss vs Choleksy"](development/graphs/cholesky-vs-naive-gaus-time-elapsed.png?raw=true) 
+
+* O gráfico e os logs explicitam a velocidade de execução discutida no início do capítulo: Cholesky tem uma vantagem de fator 2 sobre o Naive Gauss, o que torna-o vantajoso a médio prazo. Entretanto, numa análise assintótica, ambos comportam-se da mesma maneira.
+
+* Geração de matrizes SPD com entradas aleatórias: para esse processo foi utilizada a biblioteca sklearn e o seu pacote datasets. O comando final foi: matriz_spd_aleatoria = sklearn.datasets.make_spd_matrix(n), onde n é a dimensão da matriz. Essa decisão foi tomada devido a problemas com raízes quadradas de números negativos em Cholesky. Entretanto, ficou claro como produzir matrizes SPD: basta haver uma matriz não singular e multiplicá-la pela sua transposta.
