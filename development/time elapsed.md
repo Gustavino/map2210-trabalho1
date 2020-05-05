@@ -1,1 +1,0 @@
-* time elapsed hilbert: o ciclo de hilbert mais demorado foi para o limite maximo das matrizes de hilbert, n = 12, e demorou 0.05s. Devido a isso, foi omitido o grafico que demonstrava o tempo gasto para solucionar bla bla
